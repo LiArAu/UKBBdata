@@ -1,6 +1,6 @@
 #'
 #' Pull ukbdata from aws s3.
-#' 
+#'
 #' @param categories: All the categories that you might be working on.
 
 #' @return:
@@ -8,14 +8,18 @@
 #'   \item `ukb_dic`: dictionary of ukbiobank data
 #'   \item `ukb_data_list`: all the data you pulled out.
 #' }
-#' 
+#'
 #' @examples
-#' \dontrun{initiate_ukbdata()}
-#' \dontrun{initiate_ukbdata(c("Dementia outcomes","Asthma outcomes"))}
-#' 
+#' \dontrun{load_ukbdata()}
+#' \dontrun{load_ukbdata(c("Dementia outcomes","Asthma outcomes"))}
+#'
 
-initiate_ukbdata <- function(cats = c("ALL")){
-    
+library(stringr)
+library(dplyr)
+library(aws.s3)
+
+load_ukbdata <- function(cats = c("ALL")){
+
     ukb_dic = aws.s3::s3readRDS("s3://ukb.tbilab/genome/UKB_Field_Dictionary.rds")
     ukb_dic <<- ukb_dic
 
@@ -36,6 +40,6 @@ initiate_ukbdata <- function(cats = c("ALL")){
     print("Completed!")
     }
 
-initiate_ukbdata(c("Asthma outcomes","Fluid intelligence / reasoning"))
-head(ukb_data_list$`Asthma outcomes`)
-head(ukb_data_list$`Fluid intelligence / reasoning`)
+# load_ukbdata(c("Asthma outcomes","Fluid intelligence / reasoning"))
+# head(ukb_data_list$`Asthma outcomes`)
+# head(ukb_data_list$`Fluid intelligence / reasoning`)
