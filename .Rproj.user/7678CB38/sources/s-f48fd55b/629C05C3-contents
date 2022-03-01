@@ -1,0 +1,243 @@
+---
+title: "Radiation_Chip"
+output: html_document
+---
+
+```{r}
+packages = c("dplyr","gtsummary","ggplot2","gt","stringr","tidyr")
+lapply(packages,library,character.only = TRUE)
+```
+
+
+```{r}
+rad_dat = read.csv("~/MyProjects/PI_BICK/Radiation/orig_data/Radiation_Chip_v2.csv")
+rad_dat = rad_dat[,-1]
+races = colnames(rad_dat)[3:9]
+for (i in 3:9){
+    rad_dat[,i] = ifelse(rad_dat[,i]==1,races[i-2],"")
+}
+
+rad_dat = rad_dat %>% unite(RACE, 3:9, sep = '')
+rad_dat$RACE = as.factor(rad_dat$RACE)
+rad_dat$CAUCASIAN = rad_dat$RACE
+levels(rad_dat$CAUCASIAN)[5] = "CAUCASION"
+levels(rad_dat$CAUCASIAN)[-5] = rep("NOT_CAUCASIAN",7)
+rad_dat$BMI = as.factor(rad_dat$BMI)
+rad_dat$BMI = relevel(rad_dat$BMI,ref="[18.5,24.9)")
+
+cols = colnames(rad_dat)
+rad_dat$TOTAL_DOSE_ALL = rowSums(rad_dat[,grep("TOTAL_DOSE",cols)],na.rm=TRUE)
+sites1 = cols[grep("SITE",cols)][1:7]
+
+grid_site = data.frame(GRIDS_mod = rad_dat$GRID[rowSums(rad_dat[sites1],na.rm=TRUE)>1],
+                       Site_mod = c("Brain","Brain","Spine","Brain","Brain","Brain",
+                                    "Thorax","Head/Neck","Thorax","Brain"))
+
+rad_dat[which(rad_dat$GRID==grid_site[1,1]),sites1[5]] = 0
+rad_dat[which(rad_dat$GRID==grid_site[2,1]),sites1[5]] = 0
+rad_dat[which(rad_dat$GRID==grid_site[3,1]),sites1[3]] = 0
+rad_dat[which(rad_dat$GRID==grid_site[4,1]),sites1[5]] = 0
+rad_dat[which(rad_dat$GRID==grid_site[5,1]),sites1[5]] = 0
+rad_dat[which(rad_dat$GRID==grid_site[6,1]),sites1[5]] = 0
+rad_dat[which(rad_dat$GRID==grid_site[7,1]),sites1[4]] = 0
+rad_dat[which(rad_dat$GRID==grid_site[8,1]),sites1[1]] = 0
+rad_dat[which(rad_dat$GRID==grid_site[9,1]),sites1[2]] = 0
+rad_dat[which(rad_dat$GRID==grid_site[10,1]),sites1[5]] = 0
+
+tmp = cols[grep("SITE",cols)]
+sites = tmp[-grep("NODES",tmp)]
+for (s in sites){
+    ep = strsplit(s,"BROAD")[[1]][2]
+    ss = strsplit(s,ep)[[1]]
+    rad_dat[paste0(ss,"_EPDOSE",ep)] = rad_dat[s]*rad_dat[paste0("TOTAL_DOSE",ep)]
+}
+
+cols = colnames(rad_dat)
+for (s in sites[1:7]){
+    ss = strsplit(s,"1")[[1]]
+    rad_dat[paste0(ss,"_TOTAL_DOSE")] = rowSums(rad_dat[grep(paste0(ss,"_EPDOSE"),cols)],na.rm=TRUE)
+}
+```
+
+
+
+```{r}
+# rad_dat$GRID[rowSums(rad_dat[,grep("SITE",cols)[1:7]],na.rm=TRUE)>1]
+# rad_dat$GRID[rowSums(rad_dat[,grep("SITE",cols)[9:15]],na.rm=TRUE)>1]
+# rad_dat$GRID[rowSums(rad_dat[,grep("SITE",cols)[17:23]],na.rm=TRUE)>1]
+# 
+# write.csv(rad_dat$GRID[rowSums(rad_dat[,grep("SITE",cols)[1:7]],na.rm=TRUE)>1],"GRID_1.csv",row.names = FALSE)
+# write.csv(rad_dat$GRID[rowSums(rad_dat[,grep("SITE",cols)[9:16]],na.rm=TRUE)>1],"GRID_2.csv",row.names = FALSE)
+# write.csv(rad_dat$GRID[rowSums(rad_dat[,grep("SITE",cols)[17:24]],na.rm=TRUE)>1],"GRID_3.csv",row.names = FALSE)
+
+#head(rad_dat)
+#colnames(rad_dat)
+#rad_dat %>% distinct(GRID)
+# 
+# rad_dat$GENDER = as.factor(rad_dat$GENDER)
+# levels(rad_dat$GENDER) = c("M","F")
+# rad_dat$ETHNICITY = as.factor(rad_dat$ETHNICITY)
+# levels(rad_dat$ETHNICITY) = c("N","H")
+# rad_dat$DECEASED = as.factor(rad_dat$DECEASED)
+# levels(rad_dat$DECEASED) = c("L","D")
+# rad_dat$SMOKING_SAMPLE = as.factor(rad_dat$SMOKING_SAMPLE)
+# levels(rad_dat$SMOKING_SAMPLE) = c("N","Y")
+# 
+# rad_dat$BMI = case_when(rad_dat$BMI_SAMPLE<18.5 ~ '<18.5',
+#                      rad_dat$BMI_SAMPLE<24.9 ~ '[18.5,24.9)',
+#                      rad_dat$BMI_SAMPLE<29.9 ~ '[25,29.9)',
+#                      rad_dat$BMI_SAMPLE<34.9 ~ '[30,34.9)',
+#                      rad_dat$BMI_SAMPLE>35 ~ '>35')
+# rad_dat$BMI = factor(rad_dat$BMI,c('<18.5','[18.5,24.9)','[25,29.9)','[30,34.9)','>35'))
+# 
+# rad_dat$AgeGroup = case_when(rad_dat$AGE_SAMPLE >-1 & rad_dat$AGE_SAMPLE <=10 ~ "0-10",
+#                      rad_dat$AGE_SAMPLE >10 & rad_dat$AGE_SAMPLE <=20 ~ "11-20",
+#                      rad_dat$AGE_SAMPLE >20 & rad_dat$AGE_SAMPLE <=30 ~ "21-30",
+#                      rad_dat$AGE_SAMPLE >30 & rad_dat$AGE_SAMPLE <=40 ~ "31-40",
+#                      rad_dat$AGE_SAMPLE >40 & rad_dat$AGE_SAMPLE <=50 ~ "41-50",
+#                      rad_dat$AGE_SAMPLE >50 & rad_dat$AGE_SAMPLE <=60 ~ "51-60",
+#                      rad_dat$AGE_SAMPLE >60 & rad_dat$AGE_SAMPLE <=70 ~ "61-70",
+#                      rad_dat$AGE_SAMPLE >70 & rad_dat$AGE_SAMPLE <=80 ~ "71-80",
+#                      rad_dat$AGE_SAMPLE >80 & rad_dat$AGE_SAMPLE <=90 ~ "81-90",
+#                      rad_dat$AGE_SAMPLE >90 & rad_dat$AGE_SAMPLE <=100 ~ "91-100",
+#                      rad_dat$AGE_SAMPLE >100 ~ ">100")
+# rad_dat$AgeGroup = as.factor(rad_dat$AgeGroup)
+# 
+# rad_dat$NUM_OF_EPISODES = rowSums(!is.na(rad_dat %>% select(grep("RADIATION_MALIGNANCY",colnames(rad_dat)))))
+
+rad_dat %>% select(GENDER,RACE,CAUCASIAN,ETHNICITY,DECEASED,AGE_SAMPLE,SMOKING_SAMPLE,385:399) %>% tbl_summary()
+```
+
+```{r}
+malig_percent = rad_dat %>% select(grep("RADIATION_MALIGNANCY",colnames(rad_dat))) %>% tbl_summary(missing="no")
+other_percent = rad_dat %>% select(grep("OTHER_INDICATION",colnames(rad_dat))) %>% tbl_summary(missing="no")
+malig_percent
+other_percent
+
+rad_dat %>% select(grep("PRIMARY1",colnames(rad_dat))) %>% tbl_summary(missing="no")
+rad_dat %>% select(grep("PRIMARY2",colnames(rad_dat))) %>% tbl_summary(missing="no")
+rad_dat %>% select(grep("PRIMARY3",colnames(rad_dat))) %>% tbl_summary(missing="no")
+rad_dat %>% select(grep("PRIMARY4",colnames(rad_dat))) %>% tbl_summary(missing="no")
+rad_dat %>% select(grep("PRIMARY5",colnames(rad_dat))) %>% tbl_summary(missing="no")
+rad_dat %>% select(grep("PRIMARY6",colnames(rad_dat))) %>% tbl_summary(missing="no")
+```
+
+```{r}
+combine_data = readRDS('~/MyProjects/PI_BICK/mCA/data/combine_data_0128.rds')
+#combine_data = combine_data %>% group_by(GRID) %>% filter(row_number()==1) %>% ungroup()
+zbtb33 = readRDS('~/MyProjects/PI_BICK/mCA/orig_data/mut_calls_2021_0920/zbtb33_all_snps_norm_sep2021.rds')
+zbtb33 = zbtb33 %>% group_by(grid) %>% summarise(any_mut = any(mut=="1"))
+combine_data = combine_data %>% left_join(zbtb33 %>% mutate(ZBTB33 = any_mut) %>% select(grid,ZBTB33) %>% rename(GRID=grid))
+combine_data$SmokingStatus = as.factor(combine_data$SmokingStatus)
+levels(combine_data$SmokingStatus) = c('Current or Past Smoker','Current or Past Smoker','Non-smoker',NA)
+combine_data$Radiation = 0
+combine_data$Radiation[combine_data$GRID %in% rad_dat$GRID] = 1
+combine_data$Radiation = as.factor(combine_data$Radiation)
+combine_data = combine_data %>% rename(ANY_MUTATION = any_mutation)
+combine_data$Caucasian = combine_data$Race
+levels(combine_data$Caucasian)[4] = "Y"
+levels(combine_data$Caucasian)[1:3] = rep("N",3)
+combine_data$BMI = case_when(combine_data$BMI<18.5 ~ '<18.5',
+                     combine_data$BMI<24.9 ~ '[18.5,24.9)',
+                     combine_data$BMI<29.9 ~ '[25,29.9)',
+                     combine_data$BMI<34.9 ~ '[30,34.9)',
+                     combine_data$BMI>35 ~ '>35')
+combine_data$BMI = factor(combine_data$BMI,c('<18.5','[18.5,24.9)','[25,29.9)','[30,34.9)','>35'))
+combine_data$BMI = relevel(combine_data$BMI,ref="[18.5,24.9)")
+# rad_dat %>%
+#   select(HAS_MCA, AgeGroup, BMI, NUM_OF_EPISODES, SMOKING_SAMPLE, ANY_PLATINUM, ANY_TOPO) %>%
+#   tbl_uvregression(
+#     method = glm,
+#     y = HAS_MCA,
+#     method.args = list(family = binomial),
+#     exponentiate = TRUE,
+#     pvalue_fun = ~style_pvalue(.x, digits = 2)
+#   ) %>%
+#   add_global_p() %>%  # add global p-value 
+#   add_nevent() %>%    # add number of events of the outcome
+#   add_q() %>%         # adjusts global p-values for multiple testing
+#   bold_p() %>%        # bold p-values under a given threshold (default 0.05)
+#   bold_p(t = 0.10, q = TRUE) %>% # now bold q-values under the threshold of 0.10
+#   bold_labels()
+
+snvs = colnames(rad_dat)[386:395]
+
+for (g in c("has_mca",snvs)){
+    fom = as.formula(paste0(g," ~ age_at_seq + Gender + Caucasian + BMI + Radiation"))
+    
+    model = glm(fom, family="binomial", data = combine_data)
+    print(fom)
+    print(summary(model))
+}
+
+```
+
+```{r,eval=FALSE}
+snvs = colnames(rad_dat)[386:395]
+
+for (g in c("HAS_MCA",snvs)){
+    fom = as.formula(paste0(g," ~ AGE_SAMPLE + GENDER + CAUCASIAN + BMI"))
+    model = glm(fom, family="binomial", data = rad_dat)
+    print(fom)
+    print(summary(model))
+}
+```
+
+```{r,warning = FALSE}
+covs = colnames(rad_dat)[c(29:384,399)]
+print(covs)
+cat_covs = covs[-c(grep("DOSE",covs),grep("FRACTIONS",covs),grep("BED",covs),grep("EQD2",covs),399)]
+rad_dat[,cat_covs] = lapply(rad_dat[,cat_covs],as.factor)
+rad_dat$ANY_MUTATION = as.factor(rad_dat$ANY_MUTATION)
+
+vars = c("AGE_SAMPLE","GENDER","CAUCASIAN", "BMI")
+for (cov in covs){
+    rad_dat_complete = rad_dat[complete.cases(rad_dat[,c(vars,cov)]),c(vars,cov,"ANY_MUTATION")]
+    
+    if (any(apply(rad_dat_complete[,2:5],2,function(x){length(unique(x))<=1}))){
+        print(paste0("Not enough data to find the evidence: ", cov))
+        }
+    else{
+        fom = as.formula(paste0("ANY_MUTATION ~ ", paste(vars,"+", collapse = ""), cov))
+        model = glm(fom, family="binomial", data = rad_dat_complete)
+        p_cov = summary(model)$coefficients[grep(cov,rownames(summary(model)$coefficients)),4]
+
+        if (length(p_cov)>0 & p_cov[1] < 0.05){
+            print(fom)
+            print(summary(model))
+            }
+        else{print(paste0("Not significant: ", cov))}
+        }
+    }
+
+```
+
+```{r}
+sub_covs = colnames(rad_dat)[c(401,444:450)]
+print(sub_covs)
+for (cov in sub_covs){
+    rad_dat_complete = rad_dat[complete.cases(rad_dat[,c(vars,cov)]),c(vars,cov,"ANY_MUTATION")]
+    rad_dat_complete = rad_dat_complete[rad_dat_complete[cov]>0,]
+    
+    if (any(apply(rad_dat_complete[,2:5],2,function(x){length(unique(x))<=1}))){
+        print(paste0("Not enough data to find the evidence: ", cov))
+        }
+    else{
+        fom = as.formula(paste0("ANY_MUTATION ~ ", paste(vars,"+", collapse = ""), cov))
+        model = glm(fom, family="binomial", data = rad_dat_complete)
+        p_cov = summary(model)$coefficients[grep(cov,rownames(summary(model)$coefficients)),4]
+
+        if (length(p_cov)>0 & p_cov[1] < 0.05){
+            print(fom)
+            print(summary(model))
+            }
+        else{
+            print(paste0("Not significant: ", cov))
+            print(summary(model))
+            }
+        }
+    }
+
+```
+
+

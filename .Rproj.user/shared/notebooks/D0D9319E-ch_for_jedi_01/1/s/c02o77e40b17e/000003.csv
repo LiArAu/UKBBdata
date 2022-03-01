@@ -1,0 +1,17 @@
+"0","combine_data$type = as.factor(combine_data$type)
+levels(combine_data$type) = c('CN-LOH','AMP','DEL',""Undetermined"")
+ggplot(subset(combine_data,type %in% c('CN-LOH','AMP','DEL')), aes(x=type, y=cf, fill=type)) + 
+  theme_classic() +
+  geom_boxplot() + 
+  ylab('Cell Fraction') + 
+  geom_jitter(position=position_jitter(width=0.3, height=0.2),aes(colour=type), alpha=0.7) +
+  ggtitle(""Cell Fractions vs. detected CNAs"")
+dev.off()
+"
+"1","null device "
+"1","
+"
+"1","          1 "
+"1","
+"
+"0","pdf(""age.pdf"",width=8,height=5)"

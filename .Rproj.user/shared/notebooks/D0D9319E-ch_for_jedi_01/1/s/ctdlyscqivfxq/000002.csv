@@ -1,0 +1,5 @@
+"0","params = levels(all_glm_result$Covariates)
+"
+"2","Error in levels(all_glm_result$Covariates) : 
+  object 'all_glm_result' not found
+"

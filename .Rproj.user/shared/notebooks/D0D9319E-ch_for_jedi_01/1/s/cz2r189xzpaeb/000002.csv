@@ -1,0 +1,80 @@
+"0","library(dplyr)"
+"2","
+Attaching package: ‘dplyr’
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+"
+"0","library(reshape2)"
+"0","library(ggplot2)"
+"0","library(gridExtra)"
+"2","
+Attaching package: ‘gridExtra’
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    combine
+
+"
+"0","library(grid)"
+"0","library(rlang)"
+"0","library(car)"
+"2","Loading required package: carData
+"
+"2","
+Attaching package: ‘car’
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    recode
+
+"
+"0","library(gtsummary)"
+"0","library(gt)"
+"0","library(effects)"
+"2","lattice theme set by effectsTheme()
+See ?effectsTheme for details.
+"
+"0","library(data.table)"
+"2","Registered S3 method overwritten by 'data.table':
+  method           from
+  print.data.table     
+"
+"2","data.table 1.14.2 using 32 threads (see ?getDTthreads).  Latest news: r-datatable.com
+"
+"2","
+Attaching package: ‘data.table’
+
+"
+"2","The following object is masked from ‘package:rlang’:
+
+    :=
+
+"
+"2","The following objects are masked from ‘package:reshape2’:
+
+    dcast, melt
+
+"
+"2","The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+"
+"0","library(sjPlot)"
+"0","library(PheGenHelper)"
+"0","library(stringr)"
+"0","library(corrplot)"
+"2","corrplot 0.92 loaded
+"
+"0","library(qvalue)"

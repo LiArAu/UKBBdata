@@ -1,0 +1,6 @@
+"0","n = length(Uniform_DIF_p)"
+"0","fdr = 0.05"
+"0",""
+"0","BH_uniform = data.frame(p=Uniform_DIF_p[order(Uniform_DIF_p)], rank = 1:n)"
+"0","BH_uniform$BHcv = BH_uniform$rank/n*fdr"
+"0","BH_uniform"

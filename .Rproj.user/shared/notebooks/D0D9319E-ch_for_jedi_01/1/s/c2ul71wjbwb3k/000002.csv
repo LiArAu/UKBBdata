@@ -1,0 +1,35 @@
+"0","combine_data = readRDS('~/MyProjects/PI_BICK/mCA/data/combine_data_0128.rds')"
+"0","combine_data = combine_data %>% dplyr::select(-IDH1)"
+"0","combine_data$History_of_Smoking = as.factor(combine_data$SmokingStatus)"
+"0","levels(combine_data$History_of_Smoking) = c('Current or Past Smoker','Current or Past Smoker','Non-smoker',NA)"
+"0",""
+"0","combine_data$BMI = case_when(combine_data$BMI<25 ~ '<25',"
+"0","                             combine_data$BMI<30 ~ '[25,30)',"
+"0","                             combine_data$BMI>=30 ~ '>30')"
+"0","combine_data$BMI = factor(combine_data$BMI,c('<25','[25,30)','>30'))"
+"0",""
+"0","combine_data$Gender[combine_data$Gender=='F'] = 'Female'"
+"0","combine_data$Gender[combine_data$Gender=='M'] = 'Male'"
+"0",""
+"0","combine_data$Race = factor(combine_data$Race,c(""W"",""A"",""B"",""H""))"
+"0","levels(combine_data$Race) = c(""Caucasian"",""Asian"",""African American"",""Hispanic"")"
+"0",""
+"0","params = c('Gender','Age_at_seq','Race','BMI_30','History_of_Smoking','HTN','Diabetes','Hyperlipid')"
+"0","responses = c('has_mca',colnames(combine_data)[c(14:34)])"
+"0",""
+"0","response_data = apply(combine_data %>% dplyr::select(responses),2,sum)"
+"1","Note: Using an external vector in selections is ambiguous.
+[34mℹ[39m Use `all_of(responses)` instead of `responses` to silence this message.
+[34mℹ[39m See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
+[90mThis message is displayed once per session.[39m
+"
+"0","response = names(response_data[order(response_data,decreasing = TRUE)])"
+"0",""
+"0","distinct_data = combine_data %>% group_by(GRID) %>% filter(row_number()==1) %>% ungroup() "
+"0",""
+"0","distinct_data %>% dplyr::select(response) %>% tbl_summary()"
+"1","Note: Using an external vector in selections is ambiguous.
+[34mℹ[39m Use `all_of(response)` instead of `response` to silence this message.
+[34mℹ[39m See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
+[90mThis message is displayed once per session.[39m
+"

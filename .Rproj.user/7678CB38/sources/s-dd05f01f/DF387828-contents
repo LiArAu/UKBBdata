@@ -9,10 +9,6 @@ An R package for working with UKBB datasets including EHR, returns and somatic c
 Functions starting with "prepare" help users get familiar with the categories and fields before loading the data.
 
 ```r
-library(aws.s3)
-library(stringr)
-library(dplyr)
-
 prepare_get_category() # Get all Category and CategoryID
 prepare_get_category(c("Asthma","blood")) # Get full name of categories by keywords
 
