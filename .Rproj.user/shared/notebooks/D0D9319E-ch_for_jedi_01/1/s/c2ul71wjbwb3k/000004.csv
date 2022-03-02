@@ -1,7 +1,0 @@
-"0","  "
-"0","combine_data %>%"
-"0","  distinct(GRID,AgeGroup,Gender,Race,BMI,History_of_Smoking,HM) %>%"
-"0","  dplyr::select(AgeGroup,Gender,Race,BMI,History_of_Smoking,HM) %>% "
-"0","  tbl_summary(by = HM, missing = 'no') %>%"
-"0","  modify_spanning_header(all_stat_cols() ~ ""**Hematologic"
-"0","Malignancy**"")"

@@ -1,7 +1,0 @@
-"0","combine_data = readRDS('~/MyProjects/PI_BICK/mCA/data/combine_data_0128.rds')"
-"0","combine_data$snv_cna = ifelse(combine_data$any_mutation & combine_data$has_mca,TRUE,FALSE)"
-"0","combine_data$snv_alone = ifelse(combine_data$any_mutation & combine_data$has_mca==FALSE,TRUE,FALSE)"
-"0","combine_data$cna_alone = ifelse(combine_data$any_mutation==FALSE & combine_data$has_mca,TRUE,FALSE)"
-"0","combine_data$any_ch = ifelse(combine_data$any_mutation | combine_data$has_mca,TRUE,FALSE)"
-"0","to_summary = combine_data %>% select(1,12,35,68:80) %>% group_by(GRID) %>% filter(row_number()==1) %>% ungroup()"
-"0","to_summary %>% select(2:16) %>% tbl_summary(by = HM)"
