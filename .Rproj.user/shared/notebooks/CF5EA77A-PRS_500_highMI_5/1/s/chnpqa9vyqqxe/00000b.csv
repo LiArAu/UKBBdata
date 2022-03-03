@@ -1,4 +1,0 @@
-"0",""
-"0","BH_nonuniform = data.frame(p=Non_Uniform_DIF_p[order(Non_Uniform_DIF_p)], rank = 1:n)"
-"0","BH_nonuniform$BHcv = BH_nonuniform$rank/n*fdr"
-"0","BH_nonuniform"

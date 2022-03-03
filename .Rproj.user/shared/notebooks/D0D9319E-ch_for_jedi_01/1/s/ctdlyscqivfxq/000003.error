@@ -1,1 +1,0 @@
-{"frames":[{"func":"levels(all_glm_result$Covariates)","file":"","line_number":0,"end_line_number":0,"character_number":0,"end_character_number":0}],"message":"Error in levels(all_glm_result$Covariates) : \n  object 'all_glm_result' not found\n"}
